@@ -10,11 +10,22 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       fig.align = "center")
+```
+
+```{r libraries, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(plotly)
 ```
 
-## Data
+# Introduction
+
+[Gapminder]("http://www.gapminder.org") is a foundation that maintains a database of global socio-economic numbers about each country across time, to promote data-driven sustainable development worlwide. 
+
+One of their iconic visualization shows [how life expectancy relates to gdp per capita across time]("http://www.gapminder.org/tools/chart-type=bubbles"). 
+
+I am trying to recreate this vis using `ggplot2` (for the static version), and `plotly` (for the interactive version).
+
+# Data
 
 The data is maintained and available on GitHub.
 
@@ -268,38 +279,33 @@ y_axis <-
        tickcolor = "white",
        ticklen = 10)
 
-base <-
- data %>%
-  group_by(year) %>% 
-  arrange(desc(population)) %>% 
- plot_ly(x = ~gdp_capita, 
-         y = ~life_expectancy,
-         text = ~country, 
-         hoverinfo = "text",
-         size = ~population,
-         sizes = c(5, 4000),
-         width = 900,
-         height = 900*0.6) %>%
- layout(xaxis = x_axis,
-        yaxis = y_axis)
-
-
-base %>%
- add_trace(color = ~continent, 
-           colors = ~continent_col,
-           frame = ~year, 
-           ids = ~country,
-           mode = "markers",
-           marker = list(
-             opacity = 1,
-             line = list(
-               color = I("black"),
-               width = 1
-             )
-           ),
+data %>%
+  plot_ly(x = ~gdp_capita, 
+          y = ~life_expectancy,
+          text = ~country, 
+          hoverinfo = "text",
+          size = ~population,
+          sizes = c(5, 4000),
+          width = 900,
+          height = 900*0.6) %>%
+  layout(xaxis = x_axis,
+        yaxis = y_axis) %>%
+  add_trace(color = ~continent, 
+            colors = ~continent_col,
+            frame = ~year, 
+            ids = ~country,
+            mode = "markers",
+            marker = list(
+                      opacity = 1,
+                      line = list(
+                              color = I("black"),
+                              width = 1
+                             )
+                      ),
            type = "scatter") %>%
- animation_opts(frame = 0, easing = "linear-in-out") %>%
- animation_slider(currentvalue = slider_opts)
+  animation_opts(frame = 0, 
+                 easing = "linear-in-out") %>%
+  animation_slider(currentvalue = slider_opts)
 ```
 
 This is the closest to the orginal plot I could get.
